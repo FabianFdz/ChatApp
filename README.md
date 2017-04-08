@@ -24,6 +24,20 @@ Para enviar notificaciones push manualmente:
 phonegap push --deviceID {COPIAR-DEL-SERVE} --service apns --payload '{"aps":{"alert":"Hello World"}}'
 ```
 
+## Base de datos
+
+```bash
+mongod --dbpath db
+```
+```bash
+mongo
+use local
+db.createCollection('chat')
+db.createCollection('message')
+db.createCollection('session')
+db.createCollection('users')
+```
+
 ## Servidor
 
 _Servidor nodejs + express_

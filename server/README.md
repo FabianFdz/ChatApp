@@ -1,8 +1,8 @@
-## Descripción de las clases
+## Descripción de los modelos
 | Clase | Propiedades |
 |:----|:-----|
-| SessionID, ChatID | String hash |
-| User | { id : UUID, username : String } |
+| ChatID, SessionID, UserID | String hash / UUID |
+| User | { id : UserID, username : String } |
 | Chat | { id : ChatID, contact : User } |
 | Message | { sender : User, text : String } |
 
@@ -10,8 +10,8 @@
 
 | Endpoint        | Type | Request           | Response  | Errors |
 |:---------------|:------|:-----------------|:---------|:-----|
-|`/user/register`|POST|{ username : String, password : String }|{ uuid : UUID, session : SessionID, username : String, avatar : String }|user_already_exists|
-|`/user/login`|POST|{ username : String, password : String }|{ uuid : UUID, session : SessionID, username : String, avatar : String }|invalid_login|
+|`/user/register`|POST|{ username : String, password : String }|{ id : UserID, session : SessionID, username : String, avatar : String }|user_already_exists|
+|`/user/login`|POST|{ username : String, password : String }|{ id : UserID, session : SessionID, username : String, avatar : String }|invalid_login|
 
 ## Response
 ```json
