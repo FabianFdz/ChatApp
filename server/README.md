@@ -4,14 +4,14 @@
 | SessionID, ChatID | String hash |
 | User | { id : UUID, username : String } |
 | Chat | { id : ChatID, contact : User } |
-| Message | { text : String } |
+| Message | { sender : User, text : String } |
 
 ## Descripción de los servicios públicos
 
 | Endpoint        | Type | Request           | Response  | Errors |
 |:---------------|:------|:-----------------|:---------|:-----|
-|`/user/register`|POST|{ username : String, password : String }|{ session : SessionID, username : String, avatar : String }|user_already_exists|
-|`/user/login`|POST|{ username : String, password : String }|{ session : SessionID, username : String, avatar : String }|invalid_login|
+|`/user/register`|POST|{ username : String, password : String }|{ uuid : UUID, session : SessionID, username : String, avatar : String }|user_already_exists|
+|`/user/login`|POST|{ username : String, password : String }|{ uuid : UUID, session : SessionID, username : String, avatar : String }|invalid_login|
 
 ## Response
 ```json
