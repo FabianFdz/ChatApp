@@ -1,12 +1,17 @@
 {
-  "name": "arqui-chat-server",
-  "version": "1.0.0",
-  "description": "TEC - S12017 - Arquitectura de Aplicaciones - Tarea Chat - Server",
-  "main": "app.js",
+  "name": "arquichatserver",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "test"
+    "start": "node ./bin/www"
   },
   "dependencies": {
-    "express": "^4.15.2"
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "morgan": "~1.8.1",
+    "pug": "~2.0.0-beta11",
+    "serve-favicon": "~2.4.2"
   }
 }
