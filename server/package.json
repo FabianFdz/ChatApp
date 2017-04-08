@@ -1,0 +1,12 @@
+{
+  "name": "arqui-chat-server",
+  "version": "1.0.0",
+  "description": "TEC - S12017 - Arquitectura de Aplicaciones - Tarea Chat - Server",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}

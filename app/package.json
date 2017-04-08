@@ -1,0 +1,8 @@
+{
+  "name": "arqui-chat-app",
+  "version": "1.0.0",
+  "description": "TEC - S12017 - Arquitectura de Aplicaciones - Tarea Chat - App",
+  "scripts": {
+    "test": "test"
+  }
+}
