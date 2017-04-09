@@ -55,6 +55,8 @@ db.users.find();
 _Servidor nodejs + express_
 
 ```bash
+npm install nodemon -g
+
 cd server
 npm install
 PORT=8080, DEBUG=arquiChatServer:* npm start
