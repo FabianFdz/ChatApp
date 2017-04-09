@@ -30,7 +30,7 @@ Si no se incluye o es invalido, se retornará el error `403 not_authorized`
 | Endpoint        | Type | { s : SessionID } + Request| Response  | Details |
 |:---------------|:------|:-----------------|:---------|:----|
 |`/user/logout`|GET||OK||
-|`/contact/search`|GET|{ filter : String }|{ contacts : Array[User] }|pagination|
+|`/user/search`|GET|{ filter : String }|{ contacts : Array[User] }|pagination|
 |`/chat/list`|GET||{ chats : Array[Chat] }|pagination|
 |`/chat/{ChatID}`|GET||{ id : ChatID, messages : Array[Message] }|pagination|
 

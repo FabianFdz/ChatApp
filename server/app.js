@@ -3,6 +3,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 
+var chat = require('./routes/chat');
 var user = require('./routes/user');
 
 var app = express();
@@ -20,6 +21,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', console.log.bind(console, 'mongodb connected'));
 
+app.use('/chat', chat);
 app.use('/user', user);
 
 module.exports = app;

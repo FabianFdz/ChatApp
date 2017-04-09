@@ -14,7 +14,7 @@ function successResponse(userData, sessionID) {
     });
 }
 
-router.post('/register', function(req, res, next) {
+router.post('/register', function(req, res) {
 
     Response.use(res);
 
@@ -32,7 +32,7 @@ router.post('/register', function(req, res, next) {
     });
 });
 
-router.post('/login', function(req, res, next) {
+router.post('/login', function(req, res) {
     Response.use(res);
 
     User.login(req.body.username, req.body.password, function(err, userData) {
@@ -45,6 +45,16 @@ router.post('/login', function(req, res, next) {
             SessionService.start(res, userData._id, successResponse.bind(this, userData));
         }
     });
+});
+
+router.get('/logout', function(req, res) {
+    Response.use(res);
+    // User.logout(sessionID)
+});
+
+router.get('/search', function(req, res) {
+    Response.use(res);
+    // User.search(filterUsername)
 });
 
 module.exports = router;

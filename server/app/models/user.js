@@ -2,9 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    username : String,
+    // _id : Number,
+    active : { type: Boolean, default: true },
     password : String,
-    active : Boolean
+    username : String
 });
 
 UserSchema.statics.login = function(username, password, callback) {
