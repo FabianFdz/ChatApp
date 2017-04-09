@@ -14,22 +14,28 @@ module.exports = {
         session.active = true;
 
         session.save(function(sessionErr, sessionData) {
-            Response.checkError(sessionErr);
+            Response.error(sessionErr);
             onSuccess(sessionData._id);
         });
     },
-    get : function(res, sessionID, onSuccess) {
+    get : function (res, sessionID, callback) {
         Response.use(res);
 
         Session.get(sessionID, function(sessionErr, sessionData) {
-            Response.checkError(sessionErr);
+            Response.error(sessionErr);
 
             if (!sessionData || sessionData.length === 0) {
-                Response.checkError('invalid_session');
+                Response.error('invalid_session');
             } else {
-                console.log(sessionData);
-                onSuccess(sessionData);
+                callback(sessionData);
             }
+        });
+    },
+    end : function(res, sessionID) {
+        Response.use(res);
+        Session.update({ _id : sessionID },{ $set: { active : false }}, function(sessionErr) {
+            Response.error(sessionErr);
+            Response.success({});
         });
     }
 };

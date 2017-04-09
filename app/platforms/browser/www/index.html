@@ -1,60 +1,128 @@
 <!DOCTYPE html>
-<!--
-    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
-<html>
-
+<html ng-app="mainApp">
 <head>
-    <meta charset="utf-8" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
-    <!-- Good default declaration:
-    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-        * Enable inline JS: add 'unsafe-inline' to default-src
-        * Enable eval(): add 'unsafe-eval' to default-src
-    * Create your own at http://cspisawesome.com
-    -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
-
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
-    <title>Hello World</title>
+    <!-- Required meta tags-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!-- Your app title -->
+    <title>SendChat</title>
+    <!-- Path to Framework7 iOS CSS theme styles -->
+    <link rel="stylesheet" href="css/framework7.ios.min.css">
+    <!-- Path to Framework7 iOS related color styles -->
+    <link rel="stylesheet" href="css/framework7.ios.colors.min.css">
+    <!-- Path to your custom app styles -->
+    <link rel="stylesheet" href="css/my-app.css">
+    <!-- Path to Font Awesome -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!-- Path to Framework7 Icons -->
+    <link rel="stylesheet" href="css/framework7-icons.css">
 </head>
-
-<body>
-    <div class="app">
-        <h1>PhoneGap</h1>
-        <div id="registration" class="blink">
-            <p class="event waiting">Requesting Registration ID</p>
-            <p class="event received">Registered</p>
+<body ng-controller="main" class="layout-dark">
+    <!-- Status bar overlay for full screen mode (PhoneGap) -->
+    <div class="statusbar-overlay"></div>
+    <!-- Panels overlay-->
+    <div class="panel-overlay"></div>
+    <!-- Left panel with reveal effect-->
+    <div class="panel panel-left panel-reveal">
+        <div class="content-block-title">Contactos</div>
+        <div class="list-block media-list">
+            <ul>
+                <li ng-repeat="usr in users">
+                    <div class="item-content item-link">
+                        <div class="item-media"><i class="fa fa-commenting" aria-hidden="true"></i></div>
+                        <div class="item-inner">
+                            <div class="item-title-row">
+                                <div class="item-title">{{usr.user}}</div>
+                            </div>
+                            <div class="item-subtitle">{{usr.location}}</div>
+                        </div>  
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        app.initialize();
-    </script>
+    <!-- Views -->
+    <div class="views">
+      <!-- Your main view, should have "view-main" class -->
+        <div class="view view-main">
+        <!-- Top Navbar-->
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <!-- We need cool sliding animation on title element, so we have additional "sliding" class -->
+                    <div class="center sliding">
+                        <i class="fa fa-paper-plane" aria-hidden="true"></i><br>
+                        <h3>SendChat</h3>
+                    </div>
+                    <div class="right">
+                        <!--
+                        Right link contains only icon - additional "icon-only" class
+                        Additional "open-panel" class tells app to open panel when we click on this link
+                        -->
+                        <a href="#" class="link icon-only open-modal"><i class="icon icon-info"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Pages container, because we use fixed-through navbar and toolbar, it has additional appropriate classes-->
+            <div class="pages navbar-through toolbar-through">
+                <!-- Page, "data-page" contains page name -->
+                <div data-page="index" class="page">
+                    <!-- Scrollable page content -->
+                    <div class="page-content">
+                        <div class="login-screen-title" style="margin-top: 15vh"><i class="fa fa-3x fa-paper-plane" aria-hidden="true"></i><br>
+                        <h3>SendChat</h3></div>
+                        <!-- Login form -->
+                        <form>
+                            <div class="list-block">
+                                <ul>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">Usuario</div>
+                                            <div class="item-input">
+                                                <input type="text" name="username" ng-model="usuario" placeholder="Usuario">
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label">Contraseña</div>
+                                            <div class="item-input">
+                                                <input type="password" name="password" ng-model="password" placeholder="Contraseña">
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="list-block">
+                                <ul>
+                                    <li>
+                                        <a ng-click="getSession()" class="item-link list-button">Ingresar</a>
+                                    </li>
+                                    <li>
+                                        <a href="registro.html" class="item-link list-button">Registrarse</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Toolbar-->
+            <!-- <div class="toolbar">
+                <div class="toolbar-inner">
+                    <!-- Toolbar links --
+                    <a href="index.html" class="link back">Atrás</a>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <script src="js/angular.min.js"></script>
+    <script src="js/angular-route.js"></script>
+    <!-- Path to Framework7 Library JS-->
+    <script type="text/javascript" src="js/framework7.min.js"></script>
+    <!-- Path to your app js-->
+    <script type="text/javascript" src="js/chat.js"></script>
+    <script src="js/main.js"></script>
 </body>
-
 </html>

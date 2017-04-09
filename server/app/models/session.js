@@ -3,10 +3,23 @@ var Schema = mongoose.Schema;
 
 var SessionSchema   = new Schema({
     // _id : Number,
-    user : { type : Schema.Types.ObjectId, ref : 'User' },
-    accessOn : { type: Date, default: Date.now },
-    expiresOn : { type: Date, default: Date.now },
-    active : { type: Boolean, default: true }
+    accessOn : {
+        type: Date,
+        default: Date.now
+    },
+    active : {
+        type: Boolean,
+        default: true
+    },
+    expiresOn : {
+        type: Date,
+        default: Date.now
+    },
+    user : {
+        type : Schema.Types.ObjectId,
+        ref : 'User',
+        required: true
+    }
 });
 
 SessionSchema.statics.get = function(id, callback) {

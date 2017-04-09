@@ -6,19 +6,20 @@ var Response = require('../app/response');
 var Chat = require('../app/models/chat');
 
 router.get('/list', function(req, res) {
-    SessionService.valid(res, req.body.session, function() {
+    SessionService.get(res, req.body.session, function() {
         // Chat.find()
     });
 });
 
 router.get('/:chatId', function(req, res) {
-    SessionService.valid(res, req.body.session, function() {
-        // Chat.history()
+    SessionService.get(res, req.body.session, function() {
+        console.log(req.params);
+        Chat.history(req.params.chatId)
     });
 });
 
 router.post('/:chatId', function(req, res) {
-    SessionService.valid(res, req.body.session, function() {
+    SessionService.get(res, req.body.session, function() {
         // new Message()
     });
 });
