@@ -58,7 +58,7 @@ router.get('/list', function(req, res) {
     SessionService.get(res, req.query.session, function(sessionData) {
         var user = sessionData.user._id.toString();
 
-        Chat.participates(function(chatErr, chatsData) {
+        Chat.participates(user, function(chatErr, chatsData) {
             Response.error(chatErr);
 
             // Filtrar chats donde participa solo
