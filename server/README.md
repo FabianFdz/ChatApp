@@ -26,7 +26,7 @@ Si no se incluye o es invalido, se retornará el error `403 not_authorized`
 
 | Endpoint        | Type | { s : SessionID } + Request| Response  | Errors | Ready |
 |:---------------|:------|:-----------------|:---------|:-----|:---|
-|`/user/photo`|POST|{ file : blob }|{ avatar : String }|invalid_file||
+|`/user/photo`|POST|{ file : blob }|{ avatar : String }|invalid_file|:red_circle:|
 |`/chat/start`|POST|{ recepient : UserID }|{ id : ChatID }||:white_check_mark:|
 |`/chat/{ChatID}`|POST|{ message : String }|OK|invalid_message||
 

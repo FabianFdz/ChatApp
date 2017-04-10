@@ -23,4 +23,10 @@ var MessageSchema = new Schema({
     }
 });
 
+MessageSchema.statics.history = function(chatID, callback) {
+    return this.find({
+        chat : chatID
+    }, '_id text createdOn owner').populate('owner', '_id username avatar').exec(callback);
+}
+
 module.exports = mongoose.model('Message', MessageSchema);
