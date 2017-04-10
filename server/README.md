@@ -24,13 +24,13 @@
 Los siguientes servicios requieren el **SessionID** como parte de los parámetros del request.
 Si no se incluye o es invalido, se retornará el error `403 not_authorized`
 
-| Endpoint        | Type | { s : SessionID } + Request| Response  | Errors | Ready |
+| Endpoint        | Type | { session : SessionID } + Request| Response  | Errors | Ready |
 |:---------------|:------|:-----------------|:---------|:-----|:---|
 |`/user/photo`|POST|{ file : blob }|{ avatar : String }|invalid_file|:red_circle:|
 |`/chat/start`|POST|{ recepient : UserID }|{ id : ChatID }||:white_check_mark:|
 |`/chat/{ChatID}`|POST|{ message : String }|OK|invalid_message|:white_check_mark:|
 
-| Endpoint        | Type | { s : SessionID } + Request| Response  | Details | Ready |
+| Endpoint        | Type | { session : SessionID } + Request| Response  | Details | Ready |
 |:---------------|:------|:-----------------|:---------|:----|:---|
 |`/user/logout`|GET||OK||:white_check_mark:|
 |`/chat/list`|GET||{ chats : Array[Chat] }|paginacion|:white_check_mark:|

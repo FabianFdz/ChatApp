@@ -36,11 +36,11 @@ ChatSchema.statics.exists = function(participants, callback) {
 ChatSchema.statics.participates = function(userID, callback) {
     return this.find({
         active : true,
-        participants : user
+        participants : userID
     }, '_id participants')
     .populate({
         path : 'participants',
-        match : { _id : { $ne : user }},
+        match : { _id : { $ne : userID }},
         select : '_id username avatar'
     })
     .exec(callback);
