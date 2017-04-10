@@ -7,20 +7,20 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "org.tecarqui.appchat"
-        },
-        "phonegap-plugin-push": {
-            "SENDER_ID": "XXXXXXX",
-            "PACKAGE_NAME": "org.tecarqui.appchat"
-        },
         "cordova-plugin-console": {
             "PACKAGE_NAME": "org.tecarqui.appchat"
         },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "org.tecarqui.appchat"
         },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "org.tecarqui.appchat"
+        },
         "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "org.tecarqui.appchat"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "XXXXXXX",
             "PACKAGE_NAME": "org.tecarqui.appchat"
         }
     },

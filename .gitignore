@@ -1,2 +1,23 @@
+# OSX
+.DS_Store
+.Trashes
+
+# Android project subfolder
+app/Android/bin/
+app/Android/gen/
+app/Android/assets/
+
+# Data
 db/*
-app/platforms/*
+
+# Compiled files
+app/bin
+server/bin
+
+# Node
+app/npm-debug.log
+app/node_modules
+
+# Cordova
+app/platforms
+app/plugins
