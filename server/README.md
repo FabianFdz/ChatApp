@@ -33,7 +33,7 @@ Si no se incluye o es invalido, se retornará el error `403 not_authorized`
 | Endpoint        | Type | { s : SessionID } + Request| Response  | Details | Ready |
 |:---------------|:------|:-----------------|:---------|:----|:---|
 |`/user/logout`|GET||OK||:white_check_mark:|
-|`/chat/list`|GET||{ chats : Array[Chat] }|pagination|
-|`/chat/{ChatID}`|GET||{ id : ChatID, messages : Array[Message] }|pagination|
+|`/chat/list`|GET||{ chats : Array[Chat] }|paginacion|:white_check_mark:|
+|`/chat/{ChatID}`|GET||{ id : ChatID, messages : Array[Message] }|historico,paginacion||
 
 **Pagination** : { page : P/1, limit : X/10 }
