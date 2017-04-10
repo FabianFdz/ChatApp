@@ -28,12 +28,12 @@ Si no se incluye o es invalido, se retornará el error `403 not_authorized`
 |:---------------|:------|:-----------------|:---------|:-----|:---|
 |`/user/photo`|POST|{ file : blob }|{ avatar : String }|invalid_file|:red_circle:|
 |`/chat/start`|POST|{ recepient : UserID }|{ id : ChatID }||:white_check_mark:|
-|`/chat/{ChatID}`|POST|{ message : String }|OK|invalid_message||
+|`/chat/{ChatID}`|POST|{ message : String }|OK|invalid_message|:white_check_mark:|
 
 | Endpoint        | Type | { s : SessionID } + Request| Response  | Details | Ready |
 |:---------------|:------|:-----------------|:---------|:----|:---|
 |`/user/logout`|GET||OK||:white_check_mark:|
 |`/chat/list`|GET||{ chats : Array[Chat] }|paginacion|:white_check_mark:|
-|`/chat/{ChatID}`|GET||{ id : ChatID, messages : Array[Message] }|historico,paginacion||
+|`/chat/{ChatID}`|GET||{ id : ChatID, messages : Array[Message] }|historico,paginacion|:white_check_mark:|
 
 **Pagination** : { page : P/1, limit : X/10 }
