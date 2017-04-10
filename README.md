@@ -32,10 +32,22 @@ mongod --dbpath db
 ```bash
 mongo
 use local
+
 db.createCollection('chat')
+db.chat.remove({});
+db.chat.find();
+
 db.createCollection('message')
+db.message.remove({});
+db.message.find();
+
 db.createCollection('session')
+db.session.remove({});
+db.session.find();
+
 db.createCollection('users')
+db.users.remove({});
+db.users.find();
 ```
 
 ## Servidor
@@ -43,6 +55,8 @@ db.createCollection('users')
 _Servidor nodejs + express_
 
 ```bash
+npm install nodemon -g
+
 cd server
 npm install
 PORT=8080, DEBUG=arquiChatServer:* npm start

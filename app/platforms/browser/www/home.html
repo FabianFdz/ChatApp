@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div data-page="home" class="page" ng-controller="loginController">
     <div class="login-screen-title" style="margin-top: 15vh"><i class="fa fa-3x fa-paper-plane" aria-hidden="true"></i><br>
         <h3>SendChat</h3></div>
@@ -19,10 +20,43 @@
                             <div class="item-input">
                                 <input type="password" name="password" ng-model="password" placeholder="Contraseña">
                             </div>
+=======
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="left">
+      <a href="#" class="link icon-only open-panel">
+        <i class="icon icon-bars"></i>
+       </a>
+    </div>
+    <div class="center sliding"><i class="fa fa-paper-plane" aria-hidden="true"></i><h3>SendChat</h3></div>
+    <div class="right">
+      <a href="#" class="back link">
+        <i class="f7-icons">logout</i>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="pages">
+    <div data-page="home" class="page">
+        <div class="page-content">
+            <div class="content-block-title">Chats {{2*5+4}}</div>
+            <div class="list-block media-list">
+                <ul>
+                    <li ng-repeat="usr in users">
+                        <div class="item-content item-link">
+                            <div class="item-media"><i class="fa fa-2x fa-commenting" aria-hidden="true"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title">{{usr.user}}</div>
+                                </div>
+                                <div class="item-subtitle">{{usr.location}}</div>
+                            </div>  
+>>>>>>> 2bd29ad5a572d5bcde97a96d6b7e073a17947b62
                         </div>
                     </li>
                 </ul>
             </div>
+<<<<<<< HEAD
             <div class="list-block">
                 <ul>
                     <li>
@@ -36,3 +70,8 @@
         </form>
     </div>
 </div>
+=======
+        </div>
+    </div>
+</div>
+>>>>>>> 2bd29ad5a572d5bcde97a96d6b7e073a17947b62

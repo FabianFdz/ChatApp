@@ -1,25 +1,57 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var Message = require('./message');
+
 var ChatSchema = new Schema({
     // _id : Number,
-    active : { type : Boolean, default : true },
-    createdOn : { type : Date, default : Date.now },
-    participants : [{ type : Schema.Types.ObjectId, ref : 'User' }],
+    active : {
+        type : Boolean,
+        default : true
+    },
+    createdOn : {
+        type : Date,
+        default : Date.now
+    },
+    creator : {
+        type : Schema.Types.ObjectId,
+        ref : 'User',
+        required: true
+    },
+    participants : [{
+        type : Schema.Types.ObjectId,
+        ref : 'User',
+        required: true
+    }],
     title : String
-}, { toJSON: { virtuals: true } });
-
-ChatSchema.virtual('messages', {
-    ref: 'Message',
-    localField: '_id',
-    foreignField: 'chat'
 });
 
-ChatSchema.statics.history = function(id, callback) {
+ChatSchema.statics.exists = function(participants, callback) {
     return this.findOne({
-        _id : id,
+        active : true,
+        participants : { $all : participants, $size : participants.length }
+    }, '_id', callback);
+}
+
+ChatSchema.statics.participates = function(userID, callback) {
+    return this.find({
+        active : true,
+        participants : user
+    }, '_id participants')
+    .populate({
+        path : 'participants',
+        match : { _id : { $ne : user }},
+        select : '_id username avatar'
+    })
+    .exec(callback);
+}
+
+ChatSchema.statics.isParticipant = function(chatID, userID, callback) {
+    return this.findOne({
+        _id : chatID,
+        participants : userID,
         active : true
-    }).populate('messages').exec(callback);
+    }, callback);
 }
 
 module.exports = mongoose.model('Chat', ChatSchema);
