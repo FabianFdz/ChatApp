@@ -24,7 +24,7 @@ var UserSchema = new Schema({
 UserSchema.statics.exists = function(username, callback) {
     return this.findOne({
         username : username
-    }, callback)
+    }, callback);
 }
 
 UserSchema.statics.login = function(username, password, callback) {

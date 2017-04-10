@@ -25,10 +25,10 @@ var SessionSchema   = new Schema({
 SessionSchema.statics.get = function(id, callback) {
     return this.findOne({
         _id : id,
-        accessOn : { $gte : Date.now },
-        expiresOn : { $lt : Date.now },
+        accessOn : { $lte : Date.now() },
+        expiresOn : { $gt : Date.now() },
         active : true
-    }).populate('user').exec(callback);
+    }, '_id user').populate('user', '_id username').exec(callback);
 }
 
 module.exports = mongoose.model('Session', SessionSchema);

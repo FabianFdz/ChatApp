@@ -1,10 +1,11 @@
 ## Descripción de los modelos
 | Clase | Propiedades |
 |:----|:-----|
-| ChatID, SessionID, UserID | String hash / UUID |
-| User | { id : UserID, username : String } |
-| Chat | { id : ChatID, contact : User } |
-| Message | { sender : User, text : String } |
+| ChatID, SessionID, UserID | String hash / UUID / ObjectId |
+| User | { id : UserID, active : Boolean, avatar : String, password : String, username : String } |
+| Chat | { id : ChatID, active : Boolean, createdOn : Date, participants : [User], title : String } |
+| Message | { chat : Chat, createdOn : Date, owner : User, text : String } |
+| Session | { accessOn : Date, active : Boolean, expiresOn : Date, user : User } |
 
 ## Descripción de los servicios públicos
 
@@ -26,6 +27,7 @@ Si no se incluye o es invalido, se retornará el error `403 not_authorized`
 | Endpoint        | Type | { s : SessionID } + Request| Response  | Errors | Ready |
 |:---------------|:------|:-----------------|:---------|:-----|:---|
 |`/user/photo`|POST|{ file : blob }|{ avatar : String }|invalid_file||
+|`/chat/start`|POST|{ recepient : UserID }|{ id : ChatID }||:white_check_mark:|
 |`/chat/{ChatID}`|POST|{ message : String }|OK|invalid_message||
 
 | Endpoint        | Type | { s : SessionID } + Request| Response  | Details | Ready |

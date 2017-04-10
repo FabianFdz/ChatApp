@@ -11,15 +11,17 @@ var ChatSchema = new Schema({
         type : Date,
         default : Date.now
     },
+    creator : {
+        type : Schema.Types.ObjectId,
+        ref : 'User',
+        required: true
+    },
     participants : [{
         type : Schema.Types.ObjectId,
         ref : 'User',
         required: true
     }],
-    title : {
-        type : String,
-        required: true
-    }
+    title : String
 }, { toJSON: { virtuals: true } });
 
 ChatSchema.virtual('messages', {
@@ -28,11 +30,18 @@ ChatSchema.virtual('messages', {
     foreignField: 'chat'
 });
 
+ChatSchema.statics.exists = function(participants, callback) {
+    return this.findOne({
+        active : true,
+        participants : { $in : participants }
+    }, '_id', callback);
+}
+
 ChatSchema.statics.history = function(id, callback) {
     return this.findOne({
         _id : id,
         active : true
-    }).populate('messages').exec(callback);
+    }, '_id messages').populate('messages').exec(callback);
 }
 
 module.exports = mongoose.model('Chat', ChatSchema);
