@@ -5,17 +5,20 @@ module.exports = {
     start : function(res, userID, onSuccess) {
         Response.use(res);
 
-        var session = new Session(),
-            now = Date.now();
+        Session.exists(userID, function(sessionErr, sessionData) {
 
-        session.user = userID;
-        session.accessOn = now;
-        session.expiresOn = now + (1 * 24 * 60 * 60 * 100);
-        session.active = true;
-
-        session.save(function(sessionErr, sessionData) {
             Response.error(sessionErr);
-            onSuccess(sessionData._id);
+
+            if (sessionData) {
+                onSuccess(sessionData._id, false);
+            } else {
+                var session = new Session();
+                session.user = userID;
+                session.save(function(saveErr, sessionData) {
+                    Response.error(saveErr);
+                    onSuccess(sessionData._id, true);
+                });
+            }
         });
     },
     get : function (res, sessionID, callback) {

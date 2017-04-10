@@ -27,8 +27,6 @@ router.post('/start', function(req, res) {
             return;
         }
 
-        // @todo validar si otro chat existe
-
         Chat.exists(participants, function(chatErr, chatData) {
 
             Response.error(chatErr);
@@ -56,20 +54,39 @@ router.post('/start', function(req, res) {
 });
 
 router.get('/list', function(req, res) {
-    SessionService.get(res, req.body.session, function() {
-        // Chat.find()
+    SessionService.get(res, req.query.session, function(sessionData) {
+        var user = sessionData.user._id.toString();
+
+        Chat.find({
+            active : true,
+            participants : user
+        }, '_id participants')
+        .populate({
+            path : 'participants',
+            match : { _id : { $ne : user }},
+            select : '_id username avatar'
+        })
+        .exec(function(chatErr, chatsData) {
+            Response.error(chatErr);
+
+            chatsData = chatsData.filter(function(chat) {
+                return chat.participants.length > 0;
+            });
+
+            Response.success(chatsData);
+        });
     });
 });
 
 router.get('/:chatId', function(req, res) {
-    SessionService.get(res, req.body.session, function() {
+    SessionService.get(res, req.query.session, function() {
         console.log(req.params);
         Chat.history(req.params.chatId)
     });
 });
 
 router.post('/:chatId', function(req, res) {
-    SessionService.get(res, req.body.session, function() {
+    SessionService.get(res, req.query.session, function() {
         // new Message()
     });
 });

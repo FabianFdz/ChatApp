@@ -5,12 +5,16 @@ var SessionService = require('../app/services/session');
 var Response = require('../app/response');
 var User = require('../app/models/user');
 
-function successResponse(userData, sessionID) {
+function successResponse(userData, sessionID, sessionCreated) {
     Response.success({
         id : userData._id,
         username : userData.username,
         avatar : userData.avatar || 'http://www.gravatar.com/avatar',
-        session : sessionID
+        // @todo mover session a una referencia virtual?
+        session : {
+            id : sessionID,
+            created : sessionCreated
+        }
     });
 }
 
@@ -35,10 +39,8 @@ router.post('/register', function(req, res) {
 
         Response.error(userErr);
 
-        if (userData && userData.active) {
-            Response.error('active_user_exists');
-        } else if (userData && !userData.active) {
-            Response.error('inactive_user_exists');
+        if (userData) { // active?
+            Response.error('user_exists');
         } else { // on null
             var user = new User();
             user.username = username;
@@ -83,7 +85,15 @@ router.post('/login', function(req, res) {
 
 router.get('/logout', function(req, res) {
     Response.use(res);
-    SessionService.end(res, req.query.session);
+
+    var session = req.query.session;
+
+    if (!session) {
+        Response.error('missing_query_session');
+        return;
+    }
+
+    SessionService.end(res, session);
 });
 
 router.get('/search', function(req, res) {

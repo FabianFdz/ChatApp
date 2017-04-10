@@ -22,7 +22,7 @@ var ChatSchema = new Schema({
         required: true
     }],
     title : String
-}, { toJSON: { virtuals: true } });
+}, { toJSON: { virtuals: false } });
 
 ChatSchema.virtual('messages', {
     ref: 'Message',
@@ -33,7 +33,7 @@ ChatSchema.virtual('messages', {
 ChatSchema.statics.exists = function(participants, callback) {
     return this.findOne({
         active : true,
-        participants : { $in : participants }
+        participants : { $all : participants, $size : participants.length }
     }, '_id', callback);
 }
 

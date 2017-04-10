@@ -13,7 +13,9 @@ var SessionSchema   = new Schema({
     },
     expiresOn : {
         type: Date,
-        default: Date.now
+        default: function() {
+            return Date.now() + (1 * 24 * 60 * 60 * 100);
+        }
     },
     user : {
         type : Schema.Types.ObjectId,
@@ -22,13 +24,27 @@ var SessionSchema   = new Schema({
     }
 });
 
-SessionSchema.statics.get = function(id, callback) {
-    return this.findOne({
-        _id : id,
+function getValidSessionConditions() {
+    return {
         accessOn : { $lte : Date.now() },
         expiresOn : { $gt : Date.now() },
         active : true
-    }, '_id user').populate('user', '_id username').exec(callback);
+    };
+}
+
+function getValidSession(filter, callback) {
+    var criteria = Object.assign(filter, getValidSessionConditions());
+    return this.findOne(criteria, '_id user')
+               .populate('user', '_id username')
+               .exec(callback);
+}
+
+SessionSchema.statics.exists = function(userID, callback) {
+    return getValidSession.call(this, { user : userID }, callback);
+}
+
+SessionSchema.statics.get = function(id, callback) {
+    return getValidSession.call(this, { _id : id }, callback);
 }
 
 module.exports = mongoose.model('Session', SessionSchema);
