@@ -1,0 +1,29 @@
+<div data-page="registro" class="page" ng-controller="searchController">
+	<form data-search-list=".list-block-search" data-search-in=".item-title" class="searchbar searchbar-init">
+    	<div class="searchbar-input">
+      		<input type="search" placeholder="Buscar" ng-model="filter" ng-change="getUsers()"><a href="#" class="searchbar-clear"></a>
+    	</div><a href="#" class="searchbar-cancel">Cancelar</a>
+  	</form>
+ 
+  	<!-- Search Bar overlay -->
+  	<div class="searchbar-overlay"></div>
+ 
+  		<div class="page-content">
+		    <!-- This block will be displayed if nothing found -->
+		    <div class="content-block searchbar-not-found">
+		      	<div class="content-block-inner">Sin Resultados</div>
+		    </div>
+ 
+    		<!-- This block will be displayed if anything found, and this list block is used a searbar target -->
+    		<div class="list-block list-block-search searchbar-found">
+      			<ul>
+        			<li class="item-content" ng-repeat="usr in users" ng-click="gotoChat(usr)">
+          				<div class="item-inner">
+            				<div class="item-title">{{usr.username}}</div>
+          				</div>
+        			</li>
+      			</ul>
+    		</div>
+  		</div>
+  	</div>
+</div>

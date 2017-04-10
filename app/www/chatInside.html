@@ -14,7 +14,7 @@
     </div>
     <div class="page-content messages-content" style="padding-top: 60px;background-color: rgb(19,19,19);color: white">
         <div class="messages">
-            <div ng-repeat="msj in chat" ng-class="{'message message-sent':true, 'message-pic': false, 'message-with-avatar': false}">
+            <div ng-repeat="msj in chat" ng-class="{'message':true, 'message-sent':true, 'message-pic': false, 'message-with-avatar': false}">
                 <div ng-if="hasText(msj.name)" class="message-name">{{::msj.name}}</div>
                 <div class="message-text">{{msj.message.mensaje}}</div>
                 <div class="message-label">{{msj.time | date:'yyyy-MM-dd'}}</div>
@@ -23,7 +23,7 @@
     </div>
     <div class="toolbar messagebar messagebar-init">
         <div class="toolbar-inner">
-            <textarea placeholder="Mensaje" ng-model="mensajeInput"></textarea><a ng-click="enviarMensaje()" class="link">Send</a>
+            <textarea placeholder="Mensaje" ng-model="mensajeInput"></textarea><a ng-click="enviarMensaje()" class="link">Enviar</a>
         </div>
     </div>
 </div>
