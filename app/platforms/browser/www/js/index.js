@@ -1,88 +1,182 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        console.log('Received Device Ready Event');
-        console.log('calling setup push');
-        app.setupPush();
-    },
-    setupPush: function() {
-        console.log('calling push init');
-        var push = PushNotification.init({
-            "android": {
-                "senderID": "XXXXXXXX"
-            },
-            "browser": {},
-            "ios": {
-                "sound": true,
-                "vibration": true,
-                "badge": true
-            },
-            "windows": {}
-        });
-        console.log('after init');
+var myApp = {};
+var mainView = {};
+var rightView = {};
+var $$ = Dom7;
 
-        push.on('registration', function(data) {
-            console.log('registration event: ' + data.registrationId);
+angular.module("AngularApp", ['ngTouch'])
 
-            var oldRegId = localStorage.getItem('registrationId');
-            if (oldRegId !== data.registrationId) {
-                // Save new registration ID
-                localStorage.setItem('registrationId', data.registrationId);
-                // Post registrationId to your app server as the value has changed
-            }
+.run(function() {
+    myApp = new Framework7({
+        // modalTitle: 'Framework7',
+        // material: true,
+        pushState: true,
+        angular: true
+    });
+    mainView = myApp.addView('.view-main', {});
+})   
 
-            var parentElement = document.getElementById('registration');
-            var listeningElement = parentElement.querySelector('.waiting');
-            var receivedElement = parentElement.querySelector('.received');
+.config(function() {
+    window.location.hash = "#!/home.html";  
+})
+// .directive('onTouch', function() {
+//   return {
+//         restrict: 'A',
+//         link: function(scope, elm, attrs) {
+//             var ontouchFn = scope.$eval(attrs.onTouch);
+//             elm.bind('touchstart', function(evt) {
+//                 scope.$apply(function() {
+//                     ontouchFn.call(scope, evt.which);
+//                 });
+//             });
+//             elm.bind('click', function(evt){
+//                     scope.$apply(function() {
+//                         ontouchFn.call(scope, evt.which);
+//                     });
+//             });
+//         }
+//     };
+// });
 
-            listeningElement.setAttribute('style', 'display:none;');
-            receivedElement.setAttribute('style', 'display:block;');
-        });
 
-        push.on('error', function(e) {
-            console.log("push error = " + e.message);
-        });
 
-        push.on('notification', function(data) {
-            console.log('notification event');
-            navigator.notification.alert(
-                data.message,         // message
-                null,                 // callback
-                data.title,           // title
-                'Ok'                  // buttonName
-            );
-       });
+
+
+
+
+
+  
+.controller("RootController", ["$scope", function($scope) {
+    $scope.title = "Examples";
+}])
+
+
+
+
+
+
+
+
+
+ 
+.controller("chatController", ["$scope", "$http", function($scope, $http) {
+    $scope.user = angular.fromJson(sessionStorage['currentChat']);
+    $scope.chat = [{message:{mensaje:'Esto es una prueba de un mensaje largo. ;)',user:'usrTest2'},date:new Date()}]; 
+    var channel = 'test';
+
+    pubnub = new PubNub({
+        publishKey : 'pub-c-a617c0cc-d292-4b23-8d37-dadab6daa22b',
+        subscribeKey : 'sub-c-24f21b62-1d83-11e7-9093-0619f8945a4f'
+    });
+
+    // Handles all the messages coming in from pubnub.subscribe.
+    function handleMessage(message) {
+        message.time = message.timetoken.toString().slice(0,10)
+        $scope.chat.push(message)
+        console.log($scope.chat)
+        $scope.$apply();
+    };
+
+    // Handle message
+    $scope.enviarMensaje = function () {
+        var message = $scope.mensajeInput;
+ 
+        if (message != '') {
+            pubnub.publish({
+                'channel': channel,
+                message: {
+                  username: 'test',
+                  text: message
+                }
+            });
+ 
+            $scope.mensajeInput = "";
+        };
+    };
+
+    pubnub.subscribe({
+        'channel': channel,
+        message: handleMessage
+    });
+
+    $scope.hasText = function (text) {
+        return (typeof text!='undefined') && (text!='');
+    }         
+}])
+
+
+
+
+
+
+
+
+
+
+
+
+
+.controller("chatsController", ["$scope", "$http", function($scope, $http) {
+    $scope.chats = [{user:'fabianfdz',location:'Costa Rica',image:'http://lorempixel.com/400/400/people/'},{user:'johnD',location:'USA',image:'http://lorempixel.com/400/400/people/'},{user:'qwerty',location:'España',image:'http://lorempixel.com/400/400/people/'}]; // Datos de Prueba
+
+    $scope.gotoChat = function (chat) {
+        sessionStorage['currentChat'] = angular.toJson(chat);
+        mainView.router.loadPage('../chatInside.html');
     }
-};
+}])
+
+
+
+
+
+
+
+
+
+
+
+
+
+.controller("loginController", ["$scope", "$http", function($scope, $http) {
+    $scope.getSession = function () { 
+        // var dataObj = {
+        //         username : $scope.usuario, 
+        //         password : $scope.password
+        // };
+
+        // console.log('mainView.router')
+
+        // $http({
+        //     method: 'POST',
+        //     url: 'http://localhost:8080/user/login',
+        //     data: dataObj,
+        //     headers: {'Content-Type': 'application/json'}
+        // }).success(function(data, status, headers, config) {
+        //     $scope.session = data.data;
+            // mainView.router.loadPage('../chats.html');
+        // }).error(function(data, status, headers, config) {
+        //     alert( "failure message: " + JSON.stringify({data: data}));
+        // });  
+
+            mainView.router.loadPage('../chats.html');
+    }
+
+    $scope.setUser = function () {
+        var dataObj = {
+                username : $scope.usuario, 
+                password : $scope.password
+        };
+
+        $http({
+            method: 'POST',
+            url: 'http://localhost:8080/user/register',
+            data: dataObj,
+            headers: {'Content-Type': 'application/json'}
+        }).success(function(data, status, headers, config) {
+            $scope.session = data.data;
+            mainView.router.load({url:'home.html'});
+        }).error(function(data, status, headers, config) {
+            alert( "failure message: " + JSON.stringify({data: data}));
+        });     
+
+    }
+}]);

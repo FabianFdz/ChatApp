@@ -1,0 +1,38 @@
+<div data-page="home" class="page" ng-controller="loginController">
+    <div class="login-screen-title" style="margin-top: 15vh"><i class="fa fa-3x fa-paper-plane" aria-hidden="true"></i><br>
+        <h3>SendChat</h3></div>
+        <!-- Login form -->
+        <form>
+            <div class="list-block">
+                <ul>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label">Usuario</div>
+                            <div class="item-input">
+                                <input type="text" name="username" ng-model="usuario" placeholder="Usuario">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label">Contraseña</div>
+                            <div class="item-input">
+                                <input type="password" name="password" ng-model="password" placeholder="Contraseña">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <a href="chats.html" ng-click="getSession()" class="item-link list-button">Ingresar</a>
+                    </li>
+                    <li>
+                        <a href="registro.html" class="item-link list-button">Registrarse</a>
+                    </li>
+                </ul>
+            </div>
+        </form>
+    </div>
+</div>
