@@ -1,0 +1,40 @@
+<div data-page="listing" class="page" ng-controller="ListingController">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left">
+                <a href="search.html" class="link icon-only">
+                    <i class="f7-icons">search</i>
+                </a>
+            </div>
+            <div class="center sliding">
+                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                <h3>SendChat</h3>
+            </div>
+            <div class="right">
+                <a ng-click="logOut()" class="back link">
+                    <i class="f7-icons">logout</i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="content-block-title" style="margin-top: 60px">Chats</div>
+    <div class="list-block inset">
+        <ul>
+            <li ng-if="chats.length == 0">Sin Chats Recientes</li>
+            <li ng-repeat="chat in chats" ng-click="goToChat(chat)">
+                <div class="item-content item-link">
+                    <div class="item-media">
+                        <i class="fa fa-2x fa-commenting" ng-if="!chat.hasOwnProperty('image')"></i>
+                        <img src="{{ chat.image }}" style="width: 35px; height: 35px; border-radius: 50px" alt="Avatar" ng-if="chat.hasOwnProperty('image')">
+                    </div>
+                    <div class="item-inner">
+                        <div class="item-title-row">
+                            <div class="item-title">{{ chat.user }}</div>
+                        </div>
+                        <div class="item-subtitle">{{ chat.location }}</div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

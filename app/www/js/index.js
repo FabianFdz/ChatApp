@@ -1,133 +1,225 @@
-var myApp = {};
-var mainView = {};
-var rightView = {};
-var $$ = Dom7;
+var UI, View; // Framework7 UI and main view
 
-angular.module("AngularApp", ['ngTouch'])
+/**
+ * Helpers
+ */
+function goToView(viewInfo) {
+    window.location.hash = viewInfo.hash;
+}
 
-.run(function() {
-    myApp = new Framework7({
-        // modalTitle: 'Framework7',
-        // material: true,
+var SessionManager = {
+    exists : function() {
+        return sessionStorage.hasOwnProperty('session');
+    },
+    get : function() {
+        return this.exists() ? sessionStorage['session'] : {};
+    },
+    set : function(sessionID) {
+        sessionStorage['session'] = sessionID;
+    },
+    flush : function() {
+        delete sessionStorage['session'];
+    }
+};
+
+var UserManager = {
+    exists : function() {
+        return sessionStorage.hasOwnProperty('user');
+    },
+    get : function() {
+        return this.exists() ? angular.fromJson(sessionStorage['user']) : {};
+    },
+    set : function(userData) {
+        sessionStorage['user'] = angular.toJson({
+            avatar : userData.avatar,
+            id : userData.id,
+            username : userData.username
+        });
+    },
+    flush : function() {
+        delete sessionStorage['user'];
+    }
+};
+
+var ChatManager = {
+    hasCurrent : function() {
+        return sessionStorage.hasOwnProperty('currentChat');
+    },
+    setCurrent : function(chatID) {
+        sessionStorage['currentChat'] = angular.toJson(chatID);
+    },
+    getCurrent : function() {
+        return this.hasCurrent() ? angular.fromJson(sessionStorage['currentChat']) : {}
+    }
+};
+
+var ENDPOINT = 'http://localhost:8080/';
+
+var Proxy = {
+    get : function($scope, $http, uri, onSuccess) {
+        UI.showPreloader("Cargando...");
+        return $http({
+            method: 'GET',
+            url: ENDPOINT + uri,
+            headers: { 'Content-Type': 'application/json' }
+        }).success(function(data) {
+            if (data.status == "error") {
+                $scope.error = true;
+                $scope.errorMessage = data.error;
+                // onError(data.status, data.error)
+            } else {
+                $scope.error = false;
+                onSuccess(data.data);
+            }
+            UI.hidePreloader();
+        }).error(function(data /*, status, headers, config */) {
+            UI.hidePreloader();
+            alert( "failure message: " + JSON.stringify({ data: data }));
+        });
+    },
+    post : function($scope, $http, uri, dataObj, onSuccess) {
+        UI.showPreloader("Cargando...");
+        return $http({
+            method: 'POST',
+            url: ENDPOINT + uri,
+            data: dataObj,
+            headers: { 'Content-Type': 'application/json' }
+        }).success(function(data /* , status, headers, config */) {
+            if (data.status == "error") {
+                $scope.error = true;
+                $scope.errorMessage = data.error;
+                // onError(data.status, data.error)
+            } else {
+                $scope.error = false;
+                onSuccess(data.data);
+            }
+            UI.hidePreloader();
+        }).error(function(data /* , status, headers, config */) {
+            UI.hidePreloader();
+            alert( "failure message: " + JSON.stringify({ data: data }));
+        });
+    }
+};
+
+/**
+ * Constants
+ */
+var VIEWS = {
+    LOGIN : {
+        hash : "#!/login.html",
+        url : "login.html"
+    },
+    CHAT : {
+        hash : "#!/chat.html",
+        url : "chat.html"
+    },
+    LISTING : {
+        hash : "#!/listing.html",
+        url : "listing.html"
+    }
+};
+
+/**
+ * SendChatApp app
+ */
+var App = angular.module("SendChatApp", ['ngTouch']);
+
+App.run(function() {
+    UI = new Framework7({
         pushState: true,
         angular: true
     });
-    mainView = myApp.addView('.view-main', {});
-})   
+    View = UI.addView('.view-main', {});
+});
 
-.config(function() {
-    if(sessionStorage.hasOwnProperty("session"))
-        window.location.hash = "#!/../chats.html";
-    else
-        window.location.hash = "#!/home.html";  
-})
-// .directive('onTouch', function() {
-//   return {
-//         restrict: 'A',
-//         link: function(scope, elm, attrs) {
-//             var ontouchFn = scope.$eval(attrs.onTouch);
-//             elm.bind('touchstart', function(evt) {
-//                 scope.$apply(function() {
-//                     ontouchFn.call(scope, evt.which);
-//                 });
-//             });
-//             elm.bind('click', function(evt){
-//                     scope.$apply(function() {
-//                         ontouchFn.call(scope, evt.which);
-//                     });
-//             });
-//         }
-//     };
-// });
+App.config(function() {
+    goToView(SessionManager.exists() ? VIEWS.LISTING : VIEWS.LOGIN);
+});
 
+/**
+ * ROOT
+ */
+App.controller("RootController", ["$scope", function($scope) {
+    $scope.title = "Root";
+}]);
 
+function processStartSessionData(data) {
+    UserManager.set({
+        avatar : data.avatar,
+        id : data.id,
+        username : data.username
+    });
+    SessionManager.set(data.session.id);
+    View.router.loadPage(VIEWS.LISTING.url);
+}
 
+/**
+ * LOGIN
+ */
+App.controller("LoginController", ["$scope", "$http", function($scope, $http) {
+    $scope.login = function () {
+        Proxy.post($scope, $http, 'user/login', {
+            username : $scope.usuario,
+            password : $scope.password
+        }, processStartSessionData);
+    };
+}]);
 
+/**
+ * REGISTER
+ */
+App.controller("RegisterController", ["$scope", "$http", function($scope, $http) {
+    $scope.register = function () {
+        Proxy.post($scope, $http, 'user/register', {
+            username : $scope.usuario,
+            password : $scope.password
+        }, processStartSessionData);
+    };
+}]);
 
-
-
-
-  
-.controller("RootController", ["$scope", function($scope) {
-    $scope.title = "Examples";
-}])
- 
-
-
- 
-
-
-
-
-.controller("searchController", ["$scope", "$http", function($scope,$http) {
+/**
+ * SEARCH
+ */
+App.controller("SearchController", ["$scope", "$http", function($scope, $http) {
     $scope.users = [];
 
-    $scope.getUsers = function () {
-        myApp.showPreloader("Buscando...");
-        $http({
-            method: 'GET',
-            url: 'http://localhost:8080/user/search?filter='+($scope.filter==undefined?"":$scope.filter),
-            headers: {'Content-Type': 'application/json'}
-        }).success(function(data, status, headers, config) {
-            if(data.status=="error"){
-                $scope.error = true; 
-            }else{
-                $scope.error = false;
-                $scope.users = data.data.users;
-            }
-            myApp.hidePreloader();
-        }).error(function(data, status, headers, config) {
-            myApp.hidePreloader();
-            alert( "failure message: " + JSON.stringify({data: data}));
-        });  
-
-            // mainView.router.loadPage('../chats.html');
-    }
-
-    $scope.getUsers();
-
-    $scope.gotoChat = function (usr) {
-        sessionStorage['currentChat'] = angular.toJson(usr);
-        mainView.router.loadPage('../chatInside.html');
-    }
-}])
-
-
-
-
-
-
-
-
-
- 
-.controller("chatController", ["$scope", "$http", function($scope, $http) {
-    var session = angular.fromJson(sessionStorage["session"])
-    $scope.user = angular.fromJson(sessionStorage['currentChat']);
-    $scope.chat = [{message:{mensaje:'Esto es una prueba de un mensaje largo. ;)',user:'usrTest2'},date:new Date()}]; 
-
-    $scope.startChat = function () { 
-        var dataObj = {
-                recepient : $scope.user._id,
-                session : session.session.id
-        };
-
-        $http({
-            method: 'POST',
-            url: 'http://localhost:8080/chat/start',
-            data: dataObj,
-            headers: {'Content-Type': 'application/json'}
-        }).success(function(data, status, headers, config) {
-            if(data.status=="error"){
-                $scope.error = true;
-            }else{
-                $scope.error = false;
-                $scope.chat = data.data;
-            }
-        }).error(function(data, status, headers, config) {
-            alert( "failure message: " + JSON.stringify({data: data}));
+    $scope.getUsers = function() {
+        var filter = $scope.filter == undefined ? "" : $scope.filter;
+        Proxy.get($scope, $http, 'user/search?filter=' + filter, function(data) {
+            $scope.users = data.users;
         });
-    }
+    };
+
+    $scope.goToChat = function(usr) {
+        ChatManager.setCurrent(usr);
+        View.router.loadPage(VIEWS.CHAT.url);
+    };
+}]);
+
+/**
+ * CHAT (single channel)
+ */
+App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
+    var session = SessionManager.get();
+
+    $scope.user = ChatManager.get();
+
+    $scope.chat = [{
+        message : {
+            mensaje : 'Esto es una prueba de un mensaje largo. ;)',
+            user : 'usrTest2'
+        },
+        date : new Date()
+    }];
+
+    $scope.startChat = function () {
+        Proxy.post($scope, $http, 'chat/start', {
+            recepient : $scope.user._id,
+            session : session.session.id
+        }, function(data) {
+            $scope.chat = data;
+        });
+    };
 
     $scope.startChat();
 
@@ -142,7 +234,7 @@ angular.module("AngularApp", ['ngTouch'])
             message: handleMessage
         });
     }
-    
+
     // Handles all the messages coming in from pubnub.subscribe.
     function handleMessage(message) {
         message.time = message.timetoken.toString().slice(0,10)
@@ -154,7 +246,7 @@ angular.module("AngularApp", ['ngTouch'])
     // Handle message
     $scope.enviarMensaje = function () {
         var message = $scope.mensajeInput;
- 
+
         if (message != '') {
             pubnub.publish({
                 'channel': channel,
@@ -163,130 +255,36 @@ angular.module("AngularApp", ['ngTouch'])
                   text: message
                 }
             });
- 
+
             $scope.mensajeInput = "";
         };
     };
 
-    $scope.hasText = function (text) {
-        return (typeof text!='undefined') && (text!='');
-    }       
-}])
-
-
-
-
-
-
-
-
-
-
-
-
-.controller("chatsController", ["$scope", "$http", function($scope, $http) {
-    $scope.chats = [];
-    var session = angular.fromJson(sessionStorage["session"])
-
-    $scope.gotoChat = function (chat) {
-        sessionStorage['currentChat'] = angular.toJson(chat);
-        mainView.router.loadPage('../chatInside.html');
-    }
-
-    $scope.logOut = function () {
-        delete sessionStorage["session"];
-        mainView.router.loadPage('../chatInside.html');
-        // window.location.hash = "#!/home.html";
-    }
-
-    $scope.getChats = function () {
-        myApp.showPreloader("Cargando...");
-        $http({
-            method: 'GET',
-            url: 'http://localhost:8080/chat/list?session='+session.session.id,
-            headers: {'Content-Type': 'application/json'}
-        }).success(function(data, status, headers, config) {
-            if(data.status=="error"){
-                $scope.error = true; 
-            }else{
-                $scope.error = false;
-                $scope.users = data.data.users;
-            }
-            myApp.hidePreloader();
-        }).error(function(data, status, headers, config) {
-            myApp.hidePreloader();
-            alert( "failure message: " + JSON.stringify({data: data}));
-        });  
-
-            // mainView.router.loadPage('../chats.html');
-    }
-
-    $scope.getChats();
-}])
-
-
-
-
-
-
-
-
-
-
-
-
-
-.controller("loginController", ["$scope", "$http", function($scope, $http) {
-    $scope.getSession = function () { 
-        var dataObj = {
-                username : $scope.usuario, 
-                password : $scope.password
-        };
-
-        console.log('mainView.router')
-
-        $http({
-            method: 'POST',
-            url: 'http://localhost:8080/user/login',
-            data: dataObj,
-            headers: {'Content-Type': 'application/json'}
-        }).success(function(data, status, headers, config) {
-            if(data.status=="error"){
-                $scope.error = true;
-            }else{
-                $scope.error = false;
-                sessionStorage['session'] = angular.toJson(data.data);
-                mainView.router.loadPage('../chats.html');
-            }
-        }).error(function(data, status, headers, config) {
-            alert( "failure message: " + JSON.stringify({data: data}));
-        });  
-
-            // mainView.router.loadPage('../chats.html');
-    }
-
-    $scope.setUser = function () {
-        var dataObj = {
-                username : $scope.usuario, 
-                password : $scope.password
-        };
-
-        $http({
-            method: 'POST',
-            url: 'http://localhost:8080/user/register',
-            data: dataObj,
-            headers: {'Content-Type': 'application/json'}
-        }).success(function(data, status, headers, config) {
-            $scope.session = data.data;
-            mainView.router.load({url:'home.html'});
-        }).error(function(data, status, headers, config) {
-            alert( "failure message: " + JSON.stringify({data: data}));
-        });     
-
-    }
+    $scope.hasText = function(text) {
+        return (typeof text != 'undefined') && (text != '');
+    };
 }]);
 
+/**
+ * LISTING (listing)
+ */
+App.controller("ListingController", ["$scope", "$http", function($scope, $http) {
+    $scope.chats = [];
 
-var isLoading = function ($http){
-    return $http.pendingRequests.length !== 0;
-}
+    $scope.goToChat = function (chat) {
+        ChatManager.setCurrent(chat);
+        View.router.loadPage(VIEWS.CHAT.url);
+    };
+
+    $scope.logOut = function () {
+        Proxy.get($scope, $http, 'user/logout?session=' + SessionManager.get(), function() {
+            UserManager.flush()
+            SessionManager.flush();
+            View.router.loadPage(VIEWS.LOGIN.url);
+        });
+    };
+
+    Proxy.get($scope, $http, 'chat/list?session=' + SessionManager.get(), function(data) {
+        $scope.chats = data;
+    });
+}]);

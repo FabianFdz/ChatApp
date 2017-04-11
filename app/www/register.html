@@ -1,7 +1,23 @@
-<div data-page="home" class="page" ng-controller="loginController">
-    <div class="login-screen-title" style="margin-top: 15vh"><i class="fa fa-3x fa-paper-plane" aria-hidden="true"></i><br>
-        <h3>SendChat</h3></div>
-        <!-- Login form -->
+<div data-page="register" class="page" ng-controller="RegisterController">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left">
+                <a href="login.html" class="back link">
+                    <i class="icon icon-back"></i>
+                    <span>Atrás</span>
+                </a>
+            </div>
+            <div class="center sliding">
+                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                <h3>SendChat</h3>
+            </div>
+        </div>
+    </div>
+    <div class="login-screen-title">
+        <div class="login-screen-title" style="margin-top: 15vh">
+            <h3>Registro</h3>
+        </div>
+        <!-- Register form -->
         <form>
             <div class="list-block">
                 <ul>
@@ -26,10 +42,7 @@
             <div class="list-block">
                 <ul>
                     <li>
-                        <a ng-click="getSession()" class="item-link list-button">Ingresar</a>
-                    </li>
-                    <li>
-                        <a href="registro.html" class="item-link list-button">Registrarse</a>
+                        <a ng-click="register()" class="item-link list-button">Registrarse</a>
                     </li>
                 </ul>
             </div>
