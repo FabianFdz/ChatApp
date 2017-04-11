@@ -1,8 +1,30 @@
 <div data-page="search" class="page" ng-controller="SearchController">
-	<form data-search-list=".list-block-search" data-search-in=".item-title" class="searchbar searchbar-init">
+
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="left">
+                <a href="listing.html" class="link icon-only">
+                    <i class="f7-icons">chats</i>
+                </a>
+            </div>
+            <div class="center sliding">
+                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                <h3>SendChat</h3>
+            </div>
+            <div class="right">
+                <a ng-click="logOut()" class="back link">
+                    <i class="f7-icons">logout</i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form data-search-list=".list-block-search" data-search-in=".item-title" class="searchbar searchbar-init" style="top:45px;">
     	<div class="searchbar-input">
-      		<input type="search" placeholder="Buscar" ng-model="filter" ng-change="getUsers()"><a href="#" class="searchbar-clear"></a>
-    	</div><a href="#" class="searchbar-cancel">Cancelar</a>
+      		<input type="search" placeholder="Buscar" ng-model="filter" ng-change="getUsers()">
+            <a href="#" class="searchbar-clear"></a>
+    	</div>
+        <a href="#" class="searchbar-cancel">Cancelar</a>
   	</form>
 
   	<!-- Search Bar overlay -->
@@ -17,7 +39,7 @@
     		<!-- This block will be displayed if anything found, and this list block is used a searbar target -->
     		<div class="list-block list-block-search searchbar-found">
       			<ul>
-        			<li class="item-content" ng-repeat="user in users" ng-click="goToChat(user)">
+        			<li class="item-content" ng-repeat="user in users" ng-click="startChat(user._id)">
           				<div class="item-inner">
             				<div class="item-title">{{ user.username }}</div>
           				</div>

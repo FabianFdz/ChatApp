@@ -98,12 +98,20 @@ router.get('/logout', function(req, res) {
 
 router.get('/search', function(req, res) {
     Response.use(res);
+    SessionService.get(res, req.query.session, function(sessionData) {
+        var userID = sessionData.user._id.toString(),
+            filter = req.query.filter || '';
 
-    var filter = req.query.filter || '';
+        User.search(filter, function(userErr, userData) {
+            Response.error(userErr);
 
-    User.search(filter, function(userErr, userData) {
-        Response.error(userErr);
-        Response.success({ filter : filter, users : userData });
+            // Filtrar usuarios que no sean el mismo
+            userData = userData.filter(function(user) {
+                return user._id != userID;
+            });
+
+            Response.success({ filter : filter, users : userData });
+        });
     });
 });
 

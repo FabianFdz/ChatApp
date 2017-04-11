@@ -55,6 +55,7 @@ router.post('/start', function(req, res) {
 });
 
 router.get('/list', function(req, res) {
+    Response.use(res);
     SessionService.get(res, req.query.session, function(sessionData) {
         var user = sessionData.user._id.toString();
 
@@ -72,6 +73,7 @@ router.get('/list', function(req, res) {
 });
 
 router.get('/:chatId', function(req, res) {
+    Response.use(res);
     SessionService.get(res, req.query.session, function(sessionData) {
         var chat = req.params.chatId;
 

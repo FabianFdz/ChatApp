@@ -177,6 +177,20 @@ App.controller("RegisterController", ["$scope", "$http", function($scope, $http)
     };
 }]);
 
+function startChat($scope, $http, userID) {
+    Proxy.post($scope, $http, 'chat/start', {
+        recepient : userID,
+        session : SessionManager.get()
+    }, function(data) {
+        goToChat(data.id); // chatID
+    });
+}
+
+function goToChat(chatID) {
+    ChatManager.setCurrent(chatID);
+    View.router.loadPage(VIEWS.CHAT.url);
+}
+
 /**
  * SEARCH
  */
@@ -185,24 +199,21 @@ App.controller("SearchController", ["$scope", "$http", function($scope, $http) {
 
     $scope.getUsers = function() {
         var filter = $scope.filter == undefined ? "" : $scope.filter;
-        Proxy.get($scope, $http, 'user/search?filter=' + filter, function(data) {
+        Proxy.get($scope, $http, 'user/search?session=' + SessionManager.get() + '&filter=' + filter, function(data) {
             $scope.users = data.users;
         });
     };
 
-    $scope.goToChat = function(usr) {
-        ChatManager.setCurrent(usr);
-        View.router.loadPage(VIEWS.CHAT.url);
-    };
+    $scope.startChat = startChat.bind(this, $scope, $http);
 }]);
 
 /**
  * CHAT (single channel)
  */
 App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
-    var session = SessionManager.get();
+    var chatID = ChatManager.getCurrent();
 
-    $scope.user = ChatManager.get();
+    $scope.user = ChatManager.getCurrent();
 
     $scope.chat = [{
         message : {
@@ -212,16 +223,9 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
         date : new Date()
     }];
 
-    $scope.startChat = function () {
-        Proxy.post($scope, $http, 'chat/start', {
-            recepient : $scope.user._id,
-            session : session.session.id
-        }, function(data) {
-            $scope.chat = data;
-        });
-    };
+    $scope.startChat = startChat.bind(this, $scope, $http);
 
-    $scope.startChat();
+    $scope.startChat($scope, $http, chatID);
 
     function init(channel) {
         pubnub = new PubNub({
@@ -271,10 +275,7 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
 App.controller("ListingController", ["$scope", "$http", function($scope, $http) {
     $scope.chats = [];
 
-    $scope.goToChat = function (chat) {
-        ChatManager.setCurrent(chat);
-        View.router.loadPage(VIEWS.CHAT.url);
-    };
+    $scope.goToChat = goToChat;
 
     $scope.logOut = function () {
         Proxy.get($scope, $http, 'user/logout?session=' + SessionManager.get(), function() {
@@ -283,6 +284,10 @@ App.controller("ListingController", ["$scope", "$http", function($scope, $http) 
             View.router.loadPage(VIEWS.LOGIN.url);
         });
     };
+
+    $scope.hasAvatar = function(chat) {
+        return chat.participants[0].hasOwnProperty('avatar');
+    }
 
     Proxy.get($scope, $http, 'chat/list?session=' + SessionManager.get(), function(data) {
         $scope.chats = data;
