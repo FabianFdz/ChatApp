@@ -53,8 +53,9 @@ var ChatManager = {
     }
 };
 
-var ENDPOINT = 'http://localhost:8080/';
-
+// var ENDPOINT = 'http://localhost:8080/'; // Si no se va a usar otro dispositivo
+var ENDPOINT = 'http://192.168.0.102:8080/'; // Si no se va a usar otro dispositivo
+ 
 var Proxy = {
     get : function($scope, $http, uri, onSuccess) {
         UI.showPreloader("Cargando...");
@@ -72,11 +73,11 @@ var Proxy = {
                 onSuccess(data.data);
             }
             UI.hidePreloader();
-        }).error(function(data /*, status, headers, config */) {
+        }).error(function(data , status/*, headers, config */) {
             UI.hidePreloader();
-            alert( "failure message: " + JSON.stringify({ data: data }));
+            alert( "failure message: " + JSON.stringify({ data: data , status: status }));
         });
-    },
+    }, 
     post : function($scope, $http, uri, dataObj, onSuccess) {
         UI.showPreloader("Cargando...");
         return $http({
@@ -94,9 +95,9 @@ var Proxy = {
                 onSuccess(data.data);
             }
             UI.hidePreloader();
-        }).error(function(data /* , status, headers, config */) {
+        }).error(function(data , status/*, headers, config */) {
             UI.hidePreloader();
-            alert( "failure message: " + JSON.stringify({ data: data }));
+            alert( "failure message: " + JSON.stringify({ data: data , status: status }));
         });
     }
 };
@@ -213,15 +214,19 @@ App.controller("SearchController", ["$scope", "$http", function($scope, $http) {
 App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
     var chatID = ChatManager.getCurrent();
 
-    $scope.user = ChatManager.getCurrent();
+    $scope.user = UserManager.getCurrent();
 
-    $scope.chat = [{
-        message : {
-            mensaje : 'Esto es una prueba de un mensaje largo. ;)',
-            user : 'usrTest2'
-        },
-        date : new Date()
-    }];
+    $scope.chat = []; 
+
+    /*
+        Estructura del mensaje = {
+            channel : channel,
+            message : {
+                user : $scope.user,
+                mensaje
+            } 
+        }
+    */
 
     $scope.startChat = startChat.bind(this, $scope, $http);
 
