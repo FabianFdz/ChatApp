@@ -213,8 +213,6 @@ App.controller("SearchController", ["$scope", "$http", function($scope, $http) {
 App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
     var chatID = ChatManager.getCurrent();
 
-    $scope.user = ChatManager.getCurrent();
-
     $scope.chat = [{
         message : {
             mensaje : 'Esto es una prueba de un mensaje largo. ;)',
@@ -223,10 +221,6 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
         date : new Date()
     }];
 
-    $scope.startChat = startChat.bind(this, $scope, $http);
-
-    $scope.startChat($scope, $http, chatID);
-
     function init(channel) {
         pubnub = new PubNub({
             publishKey : 'pub-c-a617c0cc-d292-4b23-8d37-dadab6daa22b',
@@ -234,7 +228,7 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
         });
 
         pubnub.subscribe({
-            'channel': channel,
+            channel : channel,
             message: handleMessage
         });
     }
