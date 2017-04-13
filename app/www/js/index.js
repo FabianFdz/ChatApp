@@ -53,8 +53,8 @@ var ChatManager = {
     }
 };
 
-// var ENDPOINT = 'http://localhost:8080/'; // Si no se va a usar otro dispositivo
-var ENDPOINT = 'http://192.168.0.102:8080/'; // Si no se va a usar otro dispositivo
+var ENDPOINT = 'http://localhost:8080/'; // Si no se va a usar otro dispositivo
+// var ENDPOINT = 'http://192.168.0.102:8080/'; // Si se va a usar otro dispositivo
  
 var Proxy = {
     get : function($scope, $http, uri, onSuccess) {
@@ -64,6 +64,7 @@ var Proxy = {
             url: ENDPOINT + uri,
             headers: { 'Content-Type': 'application/json' }
         }).success(function(data) {
+            UI.hidePreloader();
             if (data.status == "error") {
                 $scope.error = true;
                 $scope.errorMessage = data.error;
@@ -72,7 +73,6 @@ var Proxy = {
                 $scope.error = false;
                 onSuccess(data.data);
             }
-            UI.hidePreloader();
         }).error(function(data , status/*, headers, config */) {
             UI.hidePreloader();
             alert( "failure message: " + JSON.stringify({ data: data , status: status }));
@@ -86,6 +86,7 @@ var Proxy = {
             data: dataObj,
             headers: { 'Content-Type': 'application/json' }
         }).success(function(data /* , status, headers, config */) {
+            UI.hidePreloader();
             if (data.status == "error") {
                 $scope.error = true;
                 $scope.errorMessage = data.error;
@@ -94,7 +95,6 @@ var Proxy = {
                 $scope.error = false;
                 onSuccess(data.data);
             }
-            UI.hidePreloader();
         }).error(function(data , status/*, headers, config */) {
             UI.hidePreloader();
             alert( "failure message: " + JSON.stringify({ data: data , status: status }));
@@ -187,7 +187,7 @@ function startChat($scope, $http, userID) {
     });
 }
 
-function goToChat(chatID) {
+function goToChat(chatID) { 
     ChatManager.setCurrent(chatID);
     View.router.loadPage(VIEWS.CHAT.url);
 }
@@ -214,17 +214,22 @@ App.controller("SearchController", ["$scope", "$http", function($scope, $http) {
 App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
     var chatID = ChatManager.getCurrent();
 
-    $scope.user = UserManager.getCurrent();
+    $scope.user = UserManager.get();
 
     $scope.chat = []; 
 
     /*
-        Estructura del mensaje = {
+        Estructura del mensaje (PubNub) = {
             channel : channel,
             message : {
-                user : $scope.user,
-                mensaje
+                username: $scope.user,
+                message : 'Mensaje a enviar'
             } 
+        }
+
+        Estructura del mensaje (Server) = {
+            session : SessionManager.get(),
+            message : 'Mensaje a enviar'
         }
     */
 
@@ -242,7 +247,6 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
 
     // Handles all the messages coming in from pubnub.subscribe.
     function handleMessage(message) {
-        message.time = message.timetoken.toString().slice(0,10)
         $scope.chat.push(message)
         console.log($scope.chat)
         $scope.$apply();
@@ -253,12 +257,21 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
         var message = $scope.mensajeInput;
 
         if (message != '') {
-            pubnub.publish({
-                'channel': channel,
-                message: {
-                  username: 'test',
-                  text: message
-                }
+            Proxy.post($scope, $http, 'chat/' + chatID, {
+                session : SessionManager.get(),
+                text : message
+            }, function(data) {
+                var msj = {
+                    "_id":"58eeaa55755092a8c099d513",
+                    "text":"holaa",
+                    "owner":$scope.user,
+                    "createdOn": $filter('date')(new Date(), 'medium')
+                };
+                $scope.chat.push(msj);
+                pubnub.publish({
+                    'channel': data.data.chat,
+                    message: msj
+                });
             });
 
             $scope.mensajeInput = "";
@@ -268,6 +281,18 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
     $scope.hasText = function(text) {
         return (typeof text != 'undefined') && (text != '');
     };
+
+    $scope.getMessages = function() {
+        var filter = $scope.filter == undefined ? "" : $scope.filter;
+        Proxy.get($scope, $http, 'chat/' + chatID + '?session=' + SessionManager.get(), function(data) {
+            $scope.chat = data.messages;
+        });
+    };
+
+    $scope.getMessages();
+
+    init(chatID);
+
 }]);
 
 /**
