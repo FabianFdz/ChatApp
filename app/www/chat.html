@@ -18,7 +18,7 @@
                 <div ng-if="msj.owner.username" class="message-name">{{msj.owner.username}}</div>
                 <div class="message-text">{{msj.text}}</div>
                 <div style="background-image:url({{::msj.owner.avatar}})" class="message-avatar"></div>
-                <div class="message-label">{{msj.createdOn | date:'HH:mm'}}</div>
+                <div class="message-label">{{msj.createdOn | date:'medium'}}</div>
             </div>
         </div>
     </div>
