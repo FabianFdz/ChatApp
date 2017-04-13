@@ -54,7 +54,7 @@ var ChatManager = {
 };
 
 var ENDPOINT = 'http://localhost:8080/'; // Si no se va a usar otro dispositivo
-// var ENDPOINT = 'http://192.168.0.102:8080/'; // Si se va a usar otro dispositivo
+// var ENDPOINT = 'http://192.168.0.100:8080/'; // Si se va a usar otro dispositivo, poner IP y puerto del server. http://<IP>:<PORT>/
  
 var Proxy = {
     get : function($scope, $http, uri, onSuccess) {
@@ -211,48 +211,43 @@ App.controller("SearchController", ["$scope", "$http", function($scope, $http) {
 /**
  * CHAT (single channel)
  */
-App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
-    var chatID = ChatManager.getCurrent();
+App.controller("ChatController", ["$scope", "$http", "$filter", function($scope, $http, $filter) {
+    var chatID = ChatManager.getCurrent(); //
 
-    $scope.user = UserManager.get();
+    $scope.user = UserManager.get(); // Datos de usuario
 
-    $scope.chat = []; 
+    $scope.chat = []; // Lista de mensajes
 
     /*
         Estructura del mensaje (PubNub) = {
             channel : channel,
             message : {
-                username: $scope.user,
-                message : 'Mensaje a enviar'
-            } 
+                "_id"       :   data.message._id,
+                "text"      :   data.message.text,
+                "owner"     :{
+                        _id     :   $scope.user.id,
+                        avatar  :   $scope.user.avatar
+                },
+                "createdOn" : $filter('date')(new Date(), 'medium')
+            }
         }
 
+
+
         Estructura del mensaje (Server) = {
-            session : SessionManager.get(),
-            message : 'Mensaje a enviar'
+            "_id"       :   data.message._id,
+            "text"      :   data.message.text,
+            "owner"     :{
+                    _id     :   $scope.user.id,
+                    avatar  :   $scope.user.avatar
+            },
+            "createdOn" : $filter('date')(new Date(), 'medium')
         }
     */
 
-    function init(channel) {
-        pubnub = new PubNub({
-            publishKey : 'pub-c-a617c0cc-d292-4b23-8d37-dadab6daa22b',
-            subscribeKey : 'sub-c-24f21b62-1d83-11e7-9093-0619f8945a4f'
-        });
 
-        pubnub.subscribe({
-            channel : channel,
-            message: handleMessage
-        });
-    }
+    // Envia mensaje a server y luego a PubNub en el success
 
-    // Handles all the messages coming in from pubnub.subscribe.
-    function handleMessage(message) {
-        $scope.chat.push(message)
-        console.log($scope.chat)
-        $scope.$apply();
-    };
-
-    // Handle message
     $scope.enviarMensaje = function () {
         var message = $scope.mensajeInput;
 
@@ -262,14 +257,16 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
                 text : message
             }, function(data) {
                 var msj = {
-                    "_id":"58eeaa55755092a8c099d513",
-                    "text":"holaa",
-                    "owner":$scope.user,
+                    "_id":data.message._id,
+                    "text":data.message.text,
+                    "owner":{
+                        _id:$scope.user.id,
+                        avatar:$scope.user.avatar
+                    },
                     "createdOn": $filter('date')(new Date(), 'medium')
                 };
-                $scope.chat.push(msj);
                 pubnub.publish({
-                    'channel': data.data.chat,
+                    'channel': data.chat,
                     message: msj
                 });
             });
@@ -278,12 +275,7 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
         };
     };
 
-    $scope.hasText = function(text) {
-        return (typeof text != 'undefined') && (text != '');
-    };
-
     $scope.getMessages = function() {
-        var filter = $scope.filter == undefined ? "" : $scope.filter;
         Proxy.get($scope, $http, 'chat/' + chatID + '?session=' + SessionManager.get(), function(data) {
             $scope.chat = data.messages;
         });
@@ -291,7 +283,19 @@ App.controller("ChatController", ["$scope", "$http", function($scope, $http) {
 
     $scope.getMessages();
 
-    init(chatID);
+    var pubnub = new PubNub({
+        publishKey : 'pub-c-a617c0cc-d292-4b23-8d37-dadab6daa22b',
+        subscribeKey : 'sub-c-24f21b62-1d83-11e7-9093-0619f8945a4f'
+    });
+
+    pubnub.subscribe({ channels: [chatID.toString()] });
+
+    pubnub.addListener({
+        message: function (message) {
+            $scope.chat.push(message.message);
+            $scope.$apply();
+        }
+    });
 
 }]);
 
