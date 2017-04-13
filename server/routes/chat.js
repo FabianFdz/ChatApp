@@ -110,8 +110,7 @@ router.post('/:chatId', function(req, res) {
 
         Chat.isParticipant(chat, sender, function(checkErr, chatData) {
             Response.error(checkErr);
-
-            if (chatData) {
+            if (!chatData) {
                 Response.error('not_participant');
             } else {
                 var message = new Message();
@@ -120,11 +119,10 @@ router.post('/:chatId', function(req, res) {
                 message.text = text;
 
                 message.save(function(saveErr, messageData) {
-                    console.log(messageData);
                     Response.error(saveErr);
                     Response.success({
                         chat : chat,
-                        message : messageData._id
+                        message : messageData
                     });
                 });
             }
