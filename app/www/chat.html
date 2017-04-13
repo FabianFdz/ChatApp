@@ -12,12 +12,13 @@
         </div>
       </div>
     </div>
-    <div class="page-content messages-content" style="padding-top: 60px;background-color: rgb(19,19,19);color: white">
+    <div class="page-content messages-content" style="padding-top: 60px; height: 92vh;background-color: rgb(19,19,19);color: white">
         <div class="messages">
-            <div ng-repeat="msj in chat" ng-class="{'message':true, 'message-sent':true, 'message-pic': false, 'message-with-avatar': false}">
-                <div ng-if="hasText(msj.name)" class="message-name">{{::msj.name}}</div>
-                <div class="message-text">{{msj.message.mensaje}}</div>
-                <div class="message-label">{{msj.time | date:'yyyy-MM-dd'}}</div>
+            <div ng-repeat="msj in chat" ng-class="{'message':true, 'message-sent': msj.owner._id==user.id, 'message-received': msj.owner._id!=user.id, 'message-with-avatar': true}">
+                <div ng-if="msj.owner.username" class="message-name">{{msj.owner.username}}</div>
+                <div class="message-text">{{msj.text}}</div>
+                <div style="background-image:url({{::msj.owner.avatar}})" class="message-avatar"></div>
+                <div class="message-label">{{msj.createdOn | date:'HH:mm'}}</div>
             </div>
         </div>
     </div>
